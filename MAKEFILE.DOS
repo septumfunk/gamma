@@ -1,0 +1,45 @@
+# Compiler
+CC = wcc386
+AR = wlib
+LINK = wlink
+
+# Directories
+ROOT = .
+BUILD = bin
+INCLUDE = include
+
+# Compiler flags
+CFLAGS = -bt=dos -mf -zq -i=$(INCLUDE)
+
+# Sources
+GAMMA_SRC = src/render.c
+GAMMA_OBJ = $(BUILD)/render.obj
+
+TEST_SRC = tests/dos.c
+TEST_OBJ = $(BUILD)/dos.obj
+
+all: $(BUILD)/gamma.lib $(BUILD)/gamma_test.exe
+
+# Static library
+$(BUILD)/gamma.lib: $(GAMMA_OBJ)
+    $(AR) -q -b $@ +$(GAMMA_OBJ)
+
+# Test executable
+$(BUILD)/gamma_test.exe: $(TEST_OBJ) $(BUILD)/gamma.lib
+    $(LINK) system nt name $@ file { $(TEST_OBJ) } library $(BUILD)/gamma.lib
+
+# Compilation
+$(BUILD)/render.obj: src/render.c
+    $(CC) $(CFLAGS) -fo=$@ $<
+
+$(BUILD)/main.obj: tests/main.c
+    $(CC) $(CFLAGS) -fo=$@ $<
+
+$(BUILD)/sdl.obj: tests/sdl.c
+    $(CC) $(CFLAGS) -fo=$@ $<
+
+$(BUILD)/raylib.obj: tests/raylib.c
+    $(CC) $(CFLAGS) -fo=$@ $<
+
+clean:
+    rm -f $(BUILD)/*.obj $(BUILD)/*.lib $(BUILD)/*.exe

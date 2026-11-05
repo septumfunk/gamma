@@ -1,0 +1,19 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "_deps/sf-std-build",
+		"source" : "build/_deps/sf-std-src"
+	}
+}

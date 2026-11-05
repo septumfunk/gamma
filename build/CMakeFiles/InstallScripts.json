@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/djf/Code/alpha/build/cmake_install.cmake",
+		"/Users/djf/Code/alpha/build/_deps/sf-std-build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

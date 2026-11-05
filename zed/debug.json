@@ -1,0 +1,15 @@
+[
+  {
+    "label": "Debug Tests (LLDB)",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "program": "$ZED_WORKTREE_ROOT/build/alpha_test",
+
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "--preset", "debug-desktop"],
+    },
+  },
+]

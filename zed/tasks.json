@@ -1,0 +1,12 @@
+[
+  {
+    "label": "CMake Configure (Desktop Debug)",
+    "command": "cmake",
+    "args": ["--preset", "debug-desktop"],
+  },
+  {
+    "label": "CMake Configure (Desktop Release)",
+    "command": "cmake",
+    "args": ["--preset", "release-desktop"],
+  }
+]
