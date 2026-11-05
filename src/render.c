@@ -1,5 +1,6 @@
 #include "gamma/render.h"
 #include <assert.h>
+#include <math.h>
 #include <stdbool.h>
 
 gm_framebuffer gm_framebuffer_alloc(gm_vec2u size, gm_color fill) {
@@ -130,21 +131,21 @@ void gm_render_tri3(
         (area = gm_edge(stri.a, stri.b, stri.c.x, stri.c.y)) == 0.0f)
         return;
 
-    uint32_t min_x = (uint32_t)fmaxf(
+    uint32_t min_x = (uint32_t)GM_MAX(
         0.0f,
-        floorf(fminf(stri.a.x, fminf(stri.b.x, stri.c.x)))
+        floorf(GM_MIN(stri.a.x, GM_MIN(stri.b.x, stri.c.x)))
     );
-    uint32_t min_y = (uint32_t)fmaxf(
+    uint32_t min_y = (uint32_t)GM_MAX(
         0.0f,
-        floorf(fminf(stri.a.y, fminf(stri.b.y, stri.c.y)))
+        floorf(GM_MIN(stri.a.y, GM_MIN(stri.b.y, stri.c.y)))
     );
-    uint32_t max_x = (uint32_t)fminf(
+    uint32_t max_x = (uint32_t)GM_MIN(
         (float)cam->fb.size.x,
-        ceilf(fmaxf(stri.a.x, fmaxf(stri.b.x, stri.c.x)))
+        ceilf(GM_MAX(stri.a.x, GM_MAX(stri.b.x, stri.c.x)))
     );
-    uint32_t max_y = (uint32_t)fminf(
+    uint32_t max_y = (uint32_t)GM_MIN(
         (float)cam->fb.size.y,
-        ceilf(fmaxf(stri.a.y, fmaxf(stri.b.y, stri.c.y)))
+        ceilf(GM_MAX(stri.a.y, GM_MAX(stri.b.y, stri.c.y)))
     );
 
     gm_pcolor pcolor = gm_to_pcolor(stri.ac);

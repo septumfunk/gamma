@@ -1,0 +1,21 @@
+[
+  {
+    "file": "src/render.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-Iinclude",
+      "-std=c99",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O0",
+      "-g",
+      "-c",
+      "src/render.c",
+      "-o",
+      "bin/debug/obj/render.o"
+    ],
+    "directory": "/Users/djf/Code/alpha",
+    "output": "bin/debug/obj/render.o"
+  }
+]

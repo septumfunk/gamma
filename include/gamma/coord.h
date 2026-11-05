@@ -7,6 +7,9 @@
 
 #define GM_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define GM_MAX(a, b) ((a) > (b) ? (a) : (b))
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 static inline float gm_rad2deg(float rad) {
     return rad * (180.0f / (float)M_PI);

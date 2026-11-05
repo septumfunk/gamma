@@ -1,0 +1,8 @@
+CompileFlags:
+  Add:
+    - --target=i386-pc-msdosdjgpp
+    - -std=c99
+    - -Wall
+    - -Wextra
+  Remove:
+    - -Werror
