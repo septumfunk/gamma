@@ -131,52 +131,80 @@ void gm_render_tri3(
         (area = gm_edge(stri.a, stri.b, stri.c.x, stri.c.y)) == 0.0f)
         return;
 
-    uint32_t min_x = (uint32_t)GM_MAX(
-        0.0f,
-        floorf(GM_MIN(stri.a.x, GM_MIN(stri.b.x, stri.c.x)))
-    );
-    uint32_t min_y = (uint32_t)GM_MAX(
-        0.0f,
-        floorf(GM_MIN(stri.a.y, GM_MIN(stri.b.y, stri.c.y)))
-    );
-    uint32_t max_x = (uint32_t)GM_MIN(
-        (float)cam->fb.size.x,
-        ceilf(GM_MAX(stri.a.x, GM_MAX(stri.b.x, stri.c.x)))
-    );
-    uint32_t max_y = (uint32_t)GM_MIN(
-        (float)cam->fb.size.y,
-        ceilf(GM_MAX(stri.a.y, GM_MAX(stri.b.y, stri.c.y)))
-    );
+    float fw = (float)cam->fb.size.x;
+    float fh = (float)cam->fb.size.y;
+
+    float fmin_x = floorf(GM_MIN(stri.a.x, GM_MIN(stri.b.x, stri.c.x)));
+    float fmin_y = floorf(GM_MIN(stri.a.y, GM_MIN(stri.b.y, stri.c.y)));
+    float fmax_x = ceilf(GM_MAX(stri.a.x, GM_MAX(stri.b.x, stri.c.x)));
+    float fmax_y = ceilf(GM_MAX(stri.a.y, GM_MAX(stri.b.y, stri.c.y)));
+
+    fmin_x = fmin_x > 0.0f ? fmin_x : 0.0f;
+    fmin_x = fmin_x < fw ? fmin_x : fw;
+    fmin_y = fmin_y > 0.0f ? fmin_y : 0.0f;
+    fmin_y = fmin_y < fh ? fmin_y : fh;
+    fmax_x = fmax_x < fw ? fmax_x : fw;
+    fmax_x = fmax_x > 0.0f ? fmax_x : 0.0f;
+    fmax_y = fmax_y < fh ? fmax_y : fh;
+    fmax_y = fmax_y > 0.0f ? fmax_y : 0.0f;
+
+    uint32_t min_x = (uint32_t)fmin_x;
+    uint32_t min_y = (uint32_t)fmin_y;
+    uint32_t max_x = (uint32_t)fmax_x;
+    uint32_t max_y = (uint32_t)fmax_y;
+
+    if (min_x >= max_x || min_y >= max_y)
+        return;
 
     gm_pcolor pcolor = gm_to_pcolor(stri.ac);
     float sign = area > 0.0f ? 1.0f : -1.0f;
 
+    float inv_area = 1.0f / fabsf(area);
+    float za = inv_area / stri.a.z;
+    float zb = inv_area / stri.b.z;
+    float zc = inv_area / stri.c.z;
+
+    float dx_ab = (stri.b.y - stri.a.y) * sign;
+    float dy_ab = -(stri.b.x - stri.a.x) * sign;
+    float dx_bc = (stri.c.y - stri.b.y) * sign;
+    float dy_bc = -(stri.c.x - stri.b.x) * sign;
+    float dx_ca = (stri.a.y - stri.c.y) * sign;
+    float dy_ca = -(stri.a.x - stri.c.x) * sign;
+
+    float start_x = (float)min_x + 0.5f;
+    float start_y = (float)min_y + 0.5f;
+
+    float row_ab = gm_edge(stri.a, stri.b, start_x, start_y) * sign;
+    float row_bc = gm_edge(stri.b, stri.c, start_x, start_y) * sign;
+    float row_ca = gm_edge(stri.c, stri.a, start_x, start_y) * sign;
+
     for (uint32_t y = min_y; y < max_y; ++y) {
+        gm_pcolor *pix = cam->fb.pixels + (size_t)y * cam->fb.size.x;
+        float *db = cam->db + (size_t)y * cam->fb.size.x;
+
+        float w_ab = row_ab;
+        float w_bc = row_bc;
+        float w_ca = row_ca;
+
         for (uint32_t x = min_x; x < max_x; ++x) {
-            float px = (float)x + 0.5f;
-            float py = (float)y + 0.5f;
-
-            float w_ab = gm_edge(stri.a, stri.b, px, py) * sign;
-            float w_bc = gm_edge(stri.b, stri.c, px, py) * sign;
-            float w_ca = gm_edge(stri.c, stri.a, px, py) * sign;
-
             if (w_ab >= 0.0f && w_bc >= 0.0f && w_ca >= 0.0f) {
-                size_t index =
-                    (size_t)y * (size_t)cam->fb.size.x + (size_t)x;
-
-                float inv_area = 1.0f / fabsf(area);
-                float inv_z =
-                    w_bc * inv_area / stri.a.z +
-                    w_ca * inv_area / stri.b.z +
-                    w_ab * inv_area / stri.c.z;
+                float inv_z = w_bc * za + w_ca * zb + w_ab * zc;
 
                 // check if new depth beats out already drawn depth
-                if (inv_z > 0.0f && inv_z > cam->db[index]) {
-                    cam->db[index] = inv_z;
-                    cam->fb.pixels[index] = pcolor;
+                if (inv_z > 0.0f && inv_z > db[x]) {
+                    db[x] = inv_z;
+                    pix[x] = pcolor;
                 }
             }
+
+            w_ab += dx_ab;
+            w_bc += dx_bc;
+            w_ca += dx_ca;
         }
+
+        row_ab += dy_ab;
+        row_bc += dy_bc;
+        row_ca += dy_ca;
     }
 }
 

@@ -1,21 +1,130 @@
 [
   {
+    "file": "tests/main.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-std=gnu11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iinclude",
+      "-O0",
+      "-g",
+      "-isystem",
+      "lib/allegro/include",
+      "-isystem",
+      "lib/sf-std/include",
+      "-c",
+      "tests/main.c",
+      "-o",
+      "obj/tests/main.o"
+    ],
+    "directory": "/Users/djf/Code/alpha",
+    "output": "obj/tests/main.o"
+  },
+  {
     "file": "src/render.c",
     "arguments": [
       "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-std=gnu11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
       "-Iinclude",
-      "-std=c99",
+      "-O0",
+      "-g",
+      "-isystem",
+      "lib/allegro/include",
+      "-isystem",
+      "lib/sf-std/include",
+      "-c",
+      "src/render.c",
+      "-o",
+      "obj/render.o"
+    ],
+    "directory": "/Users/djf/Code/alpha",
+    "output": "obj/render.o"
+  },
+  {
+    "file": "src/buffer.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-Iinclude",
+      "-std=gnu11",
+      "-Werror",
       "-Wall",
       "-Wextra",
       "-Wpedantic",
       "-O0",
       "-g",
       "-c",
-      "src/render.c",
+      "src/buffer.c",
       "-o",
-      "bin/debug/obj/render.o"
+      "obj/buffer.o"
     ],
-    "directory": "/Users/djf/Code/alpha",
-    "output": "bin/debug/obj/render.o"
+    "directory": "/Users/djf/Code/alpha/lib/sf-std",
+    "output": "obj/buffer.o"
+  },
+  {
+    "file": "src/fs.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-Iinclude",
+      "-std=gnu11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O0",
+      "-g",
+      "-c",
+      "src/fs.c",
+      "-o",
+      "obj/fs.o"
+    ],
+    "directory": "/Users/djf/Code/alpha/lib/sf-std",
+    "output": "obj/fs.o"
+  },
+  {
+    "file": "src/math.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-Iinclude",
+      "-std=gnu11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O0",
+      "-g",
+      "-c",
+      "src/math.c",
+      "-o",
+      "obj/math.o"
+    ],
+    "directory": "/Users/djf/Code/alpha/lib/sf-std",
+    "output": "obj/math.o"
+  },
+  {
+    "file": "src/str.c",
+    "arguments": [
+      "/Users/djf/djgpp/bin/i386-pc-msdosdjgpp-gcc",
+      "-Iinclude",
+      "-std=gnu11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-O0",
+      "-g",
+      "-c",
+      "src/str.c",
+      "-o",
+      "obj/str.o"
+    ],
+    "directory": "/Users/djf/Code/alpha/lib/sf-std",
+    "output": "obj/str.o"
   }
 ]

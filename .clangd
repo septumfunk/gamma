@@ -1,8 +1,5 @@
 CompileFlags:
   Add:
     - --target=i386-pc-msdosdjgpp
-    - -std=c99
-    - -Wall
-    - -Wextra
-  Remove:
-    - -Werror
+    - -isystem
+    - /Users/djf/djgpp/i386-pc-msdosdjgpp/sys-include
