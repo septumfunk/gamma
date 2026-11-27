@@ -37,7 +37,7 @@ $(info OUT: $(OUT))
 $(info ====)
 
 # Flags
-CFLAGS = -std=gnu11 -Werror -Wall -Wextra -Wpedantic -Iinclude
+CFLAGS = -std=gnu11 -Werror -Wall -Wextra -Wpedantic -Iinclude -fgnu89-inline
 
 ifeq ($(CONFIG),release)
 CFLAGS += -O2 -DNDEBUG
@@ -47,7 +47,8 @@ endif
 
 # Sources
 GAMMA_SOURCES = \
-    src/render.c
+    src/render.c \
+	src/scene.c
 
 TEST_SOURCES = \
     tests/main.c
@@ -79,20 +80,11 @@ $(OBJ)/tests: | $(OBJ)
 	$(MKDIR) $(OBJ)/tests
 
 # Libraries
-DEPS_LIB = -lm lib/allegro/bin/liballeg.a
+DEPS_LIB = -lm lib/allegro/liballeg.a
 
 CFLAGS += -isystem lib/allegro/include
 
-SFSTD_DIR = lib/sf-std
-SFSTD_LIB = $(SFSTD_DIR)/bin/$(CONFIG)/libsf-std.a
 GAMMA_LIB = $(OUT)/libgamma.a
-
-CFLAGS += -isystem $(SFSTD_DIR)/include
-DEPS_LIB += $(SFSTD_LIB)
-
-$(SFSTD_LIB):
-	@echo Make sf-std...
-	$(MAKE) -C $(SFSTD_DIR) fresh CONFIG=$(CONFIG)
 
 # Compile
 $(OBJ)/%.o: src/%.c | $(OBJ)
@@ -104,12 +96,12 @@ $(OBJ)/tests/%.o: tests/%.c | $(OBJ)/tests
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Archive
-$(GAMMA_LIB): $(GAMMA_OBJECTS) $(SFSTD_LIB) | $(OUT)
+$(GAMMA_LIB): $(GAMMA_OBJECTS) | $(OUT)
 	@echo Archiving static library...
 	$(AR) rcs $@ $(GAMMA_OBJECTS)
 
 # Link
-$(OUT)/gamma.exe: $(TEST_OBJECTS) $(GAMMA_LIB) $(SFSTD_LIB)
+$(OUT)/gamma.exe: $(TEST_OBJECTS) $(GAMMA_LIB)
 	@echo Linking exe...
 	$(CC) $(TEST_OBJECTS) $(GAMMA_LIB) $(DEPS_LIB) -o $@
 ifeq ($(CONFIG),release)
@@ -125,5 +117,4 @@ clean:
 # Fresh build (sequential, safe with -j)
 fresh:
 	$(MAKE) clean
-	$(MAKE) -C $(SFSTD_DIR) fresh CONFIG=$(CONFIG)
 	$(MAKE) all CONFIG=$(CONFIG)
