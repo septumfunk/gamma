@@ -5,7 +5,6 @@
             "label": "make debug",
             "type": "shell",
             "command": "make",
-            "args": ["CONFIG=debug"],
             "options": {
                 "cwd": "${workspaceFolder"
             },

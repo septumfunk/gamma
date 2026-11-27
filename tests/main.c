@@ -5,8 +5,8 @@
 #include <string.h>
 #include <allegro.h>
 
-#define WIDTH       320
-#define HEIGHT      240
+#define WIDTH       80
+#define HEIGHT      60
 #define WINDOW_W    640
 #define WINDOW_H    480
 #define TIMER_HZ    100
@@ -63,13 +63,13 @@ static int set_mode(void) {
 static void draw_framebuffer(void) {
     /*
      * Gamma's framebuffer uses RGBA byte ordering.
-     * Convert to the screen depth and double each pixel.
+     * Convert to the screen depth and scale each pixel 8x.
      */
     const uint32_t *src = (const uint32_t *)FB.pixels;
     const unsigned row_bytes = WINDOW_W * ((gfx_depth + 7) / 8);
 
     for (unsigned y = 0; y < HEIGHT; ++y) {
-        uint32_t *dst = (uint32_t *)FB_BMP->line[y * 2];
+        uint32_t *dst = (uint32_t *)FB_BMP->line[y * 8];
 
         if (gfx_depth == 32) {
             for (unsigned x = 0; x < WIDTH; ++x) {
@@ -80,8 +80,8 @@ static void draw_framebuffer(void) {
                     gtab[(p >> 8) & 0xFF] |
                     btab[(p >> 16) & 0xFF];
 
-                dst[x * 2] = c;
-                dst[x * 2 + 1] = c;
+                for (unsigned i = 0; i < 8; ++i)
+                    dst[x * 8 + i] = c;
             }
         } else {
             for (unsigned x = 0; x < WIDTH; ++x) {
@@ -92,15 +92,17 @@ static void draw_framebuffer(void) {
                     gtab[(p >> 8) & 0xFF] |
                     btab[(p >> 16) & 0xFF];
 
-                dst[x] = c | (c << 16);
+                uint32_t packed = c | (c << 16);
+                for (unsigned i = 0; i < 4; ++i)
+                    dst[x * 4 + i] = packed;
             }
         }
 
-        memcpy(FB_BMP->line[y * 2 + 1], dst, row_bytes);
+        for (unsigned i = 1; i < 8; ++i)
+            memcpy(FB_BMP->line[y * 8 + i], dst, row_bytes);
     }
 
     vsync();
-
     blit(FB_BMP, screen, 0, 0, 0, 0, WINDOW_W, WINDOW_H);
 }
 
@@ -408,7 +410,7 @@ chunkdata display_chunk = {
     },
 };
 
-static gm_tri3 tris[2048] = {0};
+static gm_tri3 tris[49152] = {0};
 static uint32_t tri_c = 0;
 
 typedef enum {
@@ -598,14 +600,14 @@ int main(void) {
 
 
         gm_vec3 move = GM_VEC3_NULL;
-        float movex1 = key[KEY_D] - key[KEY_A];
+        float movex1 = key[KEY_A] - key[KEY_D];
         move.x += delta_time * 15.0f * movex1;
-        float movey1 = key[KEY_UP] - key[KEY_DOWN];
+        float movey1 = key[KEY_DOWN] - key[KEY_UP];
         move.y += delta_time * 15.0f * movey1;
-        float movez1 = key[KEY_W] - key[KEY_S];
+        float movez1 = key[KEY_S] - key[KEY_W];
         move.z += delta_time * 15.0f * movez1;
 
-        float roty1 = key[KEY_RIGHT] - key[KEY_LEFT];
+        float roty1 = key[KEY_LEFT] - key[KEY_RIGHT];
 
         gm_camera *main_cam = gm_scene_peekcam(&scene, cam);
         main_cam->transform.rotation.y += delta_time * 100.0f * roty1;
