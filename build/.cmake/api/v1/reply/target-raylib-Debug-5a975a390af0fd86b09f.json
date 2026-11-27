@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "/opt/homebrew/lib/libSDL2main.a"
+			"path" : "/opt/homebrew/lib/libraylib.6.2.0.dylib"
 		}
 	],
 	"backtrace" : 5,
@@ -13,12 +13,13 @@
 		[
 			"add_library",
 			"include",
-			"find_package"
+			"find_package",
+			"set_target_properties"
 		],
 		"files" : 
 		[
-			"/opt/homebrew/lib/cmake/SDL2/SDL2mainTargets.cmake",
-			"/opt/homebrew/lib/cmake/SDL2/SDL2Config.cmake",
+			"/opt/homebrew/lib/cmake/raylib/raylib-targets.cmake",
+			"/opt/homebrew/lib/cmake/raylib/raylib-config.cmake",
 			"CMakeLists.txt"
 		],
 		"nodes" : 
@@ -29,7 +30,7 @@
 			{
 				"command" : 2,
 				"file" : 2,
-				"line" : 34,
+				"line" : 36,
 				"parent" : 0
 			},
 			{
@@ -39,7 +40,7 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 46,
+				"line" : 4,
 				"parent" : 2
 			},
 			{
@@ -51,6 +52,12 @@
 				"file" : 0,
 				"line" : 59,
 				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 61,
+				"parent" : 4
 			}
 		]
 	},
@@ -59,16 +66,23 @@
 		"major" : 2,
 		"minor" : 11
 	},
-	"id" : "SDL2::SDL2main::@6890427a1f51a3e7e1df",
+	"id" : "raylib::@6890427a1f51a3e7e1df",
 	"imported" : true,
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 6,
+			"fragment" : "/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks/OpenGL.framework"
+		}
+	],
 	"local" : true,
-	"name" : "SDL2::SDL2main",
-	"nameOnDisk" : "libSDL2main.a",
+	"name" : "raylib",
+	"nameOnDisk" : "libraylib.6.2.0.dylib",
 	"paths" : 
 	{
 		"build" : ".",
 		"source" : "."
 	},
 	"sources" : [],
-	"type" : "STATIC_LIBRARY"
+	"type" : "SHARED_LIBRARY"
 }

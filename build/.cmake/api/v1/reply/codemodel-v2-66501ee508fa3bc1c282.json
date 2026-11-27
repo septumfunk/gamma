@@ -14,21 +14,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "SDL2::SDL2::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-SDL2__SDL2-Debug-798a3a9e1b42476229d1.json",
+					"jsonFile" : "target-SDL2__SDL2-Debug-299c7c7bbc0dd83704c0.json",
 					"name" : "SDL2::SDL2",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "SDL2::SDL2main::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-SDL2__SDL2main-Debug-0d1d5dce2a3e88147712.json",
+					"jsonFile" : "target-SDL2__SDL2main-Debug-999be7f1e7a9dbb436df.json",
 					"name" : "SDL2::SDL2main",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "raylib::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-raylib-Debug-e64e4150cc538cb902d6.json",
+					"jsonFile" : "target-raylib-Debug-5a975a390af0fd86b09f.json",
 					"name" : "raylib",
 					"projectIndex" : 0
 				}
@@ -121,14 +121,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "gamma::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-gamma-Debug-c0c91cf7bd1b260a6d8d.json",
+					"jsonFile" : "target-gamma-Debug-53d658902fa0ba5a4b82.json",
 					"name" : "gamma",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "gamma_test::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-gamma_test-Debug-217cc63e05cf865fdb0d.json",
+					"jsonFile" : "target-gamma_test-Debug-e53d883a40989ef3fc48.json",
 					"name" : "gamma_test",
 					"projectIndex" : 0
 				},

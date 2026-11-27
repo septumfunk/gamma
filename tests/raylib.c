@@ -1,10 +1,12 @@
+#include "gamma/coord.h"
 #include "gamma/render.h"
+#include "gamma/scene.h"
 #include <raylib.h>
 
 #define FPS    0
-#define WIDTH  4
-#define HEIGHT 8
-#define SCALE 16
+#define WIDTH  320
+#define HEIGHT 240
+#define SCALE 4
 
 static gm_framebuffer FB;
 static Texture2D FB_TEX;
@@ -41,6 +43,10 @@ int raylib(void) {
     main_cam.transform.position.z = -5;
     second_cam.transform.position.z = 5;
     second_cam.transform.rotation.y = 180.0f;
+
+    gm_scene scene = gm_scene_new(GM_DARKBLUE);
+    gm_handle cam1 = gm_scene_addcam(&scene, main_cam);
+    gm_handle cam2 = gm_scene_addcam(&scene, second_cam);
 
     gm_tri3 tris[] = {
         // Back face
@@ -79,13 +85,29 @@ int raylib(void) {
         {{ 1, -1, -1}, { 1,  1,  1}, { 1, -1,  1},
             GM_LIGHTORANGE, GM_LIGHTORANGE, GM_LIGHTORANGE},
     };
+    gm_handle cube_m = gm_scene_addmesh(&scene, gm_mesh_new(12, tris));
+    
+    gm_handle cube1 = gm_scene_addinst_init(
+        &scene, cube_m,
+        (gm_transform) {
+            NULL,
+            cam1,
+            GM_VEC3_NULL,
+            GM_VEC3_NULL, GM_VEC3_NULL,
+        }
+    );
+    gm_handle cube2 = gm_scene_addinst_init(
+        &scene, cube_m,
+        (gm_transform) {
+            NULL,
+            cam2,
+            GM_VEC3_NULL,
+            (gm_vec3){0, 90, 0}, GM_VEC3_NULL,
+        }
+    );
 
-    gm_mesh cube1 = gm_mesh_new(12, tris);
-    cube1.transform.parent = &main_cam.transform;
-
-    gm_mesh cube2 = gm_mesh_new(12, tris);
-    cube2.transform.rotation.y = 90;
-    cube2.transform.parent = &second_cam.transform;
+    gm_scene_hideinst(&scene, cube1, cam1);
+    gm_scene_hideinst(&scene, cube2, cam2);
 
     while (!WindowShouldClose()) {
         float delta_time = GetFrameTime();
@@ -99,19 +121,20 @@ int raylib(void) {
         move.z += delta_time * 15.0f * movez1;
 
         float roty1 = IsKeyDown(KEY_RIGHT) - IsKeyDown(KEY_LEFT);
-        main_cam.transform.rotation.y += delta_time * 100.0f * roty1;
 
-        gm_transform_move(&main_cam.transform, move);
+        gm_camera *main_cam = gm_scene_peekcam(&scene, cam1);
+        main_cam->transform.rotation.y += delta_time * 100.0f * roty1;
+        gm_transform_move(&main_cam->transform, move);
 
+        gm_scene_sort(&scene);
+        gm_scene_render(&scene);
 
-        gm_camera_clear(&main_cam, GM_DARKBLUE);
-        gm_render_mesh(&main_cam, &cube2);
-
-        gm_camera_clear(&second_cam, GM_DARKRED);
-        gm_render_mesh(&second_cam, &cube1);
-
-        gm_draw_cam(&FB, &main_cam, (gm_vec2u){0, 0});
-        gm_draw_cam(&FB, &second_cam, (gm_vec2u){0, HEIGHT / 2});
+        gm_draw_cam(&FB, main_cam, (gm_vec2u){0, 0});
+        gm_draw_cam(
+            &FB,
+            gm_scene_peekcam(&scene, cam2),
+            (gm_vec2u){0, HEIGHT / 2}
+        );
 
         draw_framebuffer();
     }

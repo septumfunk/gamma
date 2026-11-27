@@ -123,11 +123,9 @@ void gm_render_tri3(
 
 void gm_draw_cam(gm_framebuffer *dest, gm_camera *cam, gm_vec2u position);
 
-
 typedef struct {
     gm_tri3 *tris;
     size_t tri_c;
-    gm_transform transform;
 } gm_mesh;
 
 static inline gm_mesh gm_mesh_new(size_t tri_c, gm_tri3 tris[tri_c]) {
@@ -136,13 +134,14 @@ static inline gm_mesh gm_mesh_new(size_t tri_c, gm_tri3 tris[tri_c]) {
     return (gm_mesh) {
         owned,
         tri_c,
-        GM_TRANSFORM_NULL,
     };
 }
 
 void gm_render_mesh(
     gm_camera *cam,
-    gm_mesh *mesh
+    gm_mesh *mesh,
+    gm_transform *transform
 );
+
 
 #endif // RENDER_H

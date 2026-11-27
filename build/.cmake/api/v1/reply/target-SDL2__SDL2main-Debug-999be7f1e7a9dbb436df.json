@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "/opt/homebrew/lib/libSDL2-2.0.0.dylib"
+			"path" : "/opt/homebrew/lib/libSDL2main.a"
 		}
 	],
 	"backtrace" : 5,
@@ -17,7 +17,7 @@
 		],
 		"files" : 
 		[
-			"/opt/homebrew/lib/cmake/SDL2/SDL2Targets.cmake",
+			"/opt/homebrew/lib/cmake/SDL2/SDL2mainTargets.cmake",
 			"/opt/homebrew/lib/cmake/SDL2/SDL2Config.cmake",
 			"CMakeLists.txt"
 		],
@@ -29,7 +29,7 @@
 			{
 				"command" : 2,
 				"file" : 2,
-				"line" : 34,
+				"line" : 35,
 				"parent" : 0
 			},
 			{
@@ -39,7 +39,7 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 38,
+				"line" : 46,
 				"parent" : 2
 			},
 			{
@@ -59,16 +59,16 @@
 		"major" : 2,
 		"minor" : 11
 	},
-	"id" : "SDL2::SDL2::@6890427a1f51a3e7e1df",
+	"id" : "SDL2::SDL2main::@6890427a1f51a3e7e1df",
 	"imported" : true,
 	"local" : true,
-	"name" : "SDL2::SDL2",
-	"nameOnDisk" : "libSDL2-2.0.0.dylib",
+	"name" : "SDL2::SDL2main",
+	"nameOnDisk" : "libSDL2main.a",
 	"paths" : 
 	{
 		"build" : ".",
 		"source" : "."
 	},
 	"sources" : [],
-	"type" : "SHARED_LIBRARY"
+	"type" : "STATIC_LIBRARY"
 }

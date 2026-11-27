@@ -28,6 +28,7 @@ add_compile_options(
 # Library
 add_library(${PROJECT_NAME} ${LIBRARY_TYPE}
   src/render.c
+  src/scene.c
 )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ROOT}/include)
 

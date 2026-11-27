@@ -198,12 +198,12 @@ void gm_draw_cam(gm_framebuffer *dest, gm_camera *cam, gm_vec2u position) {
 }
 
 
-void gm_render_mesh(gm_camera *cam, gm_mesh *mesh) {
+void gm_render_mesh(gm_camera *cam, gm_mesh *mesh, gm_transform *transform) {
     for (gm_tri3 *tri = mesh->tris; tri < mesh->tris + mesh->tri_c; ++tri) {
         gm_tri3 rotated = {
-            gm_transform_point(tri->a, &mesh->transform),
-            gm_transform_point(tri->b, &mesh->transform),
-            gm_transform_point(tri->c, &mesh->transform),
+            gm_transform_point(tri->a, transform),
+            gm_transform_point(tri->b, transform),
+            gm_transform_point(tri->c, transform),
             tri->ac, tri->bc, tri->cc
         };
 
