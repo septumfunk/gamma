@@ -74,7 +74,6 @@ void gm_scene_hideinst(gm_scene *scene, gm_handle inst, gm_handle camera);
 void gm_scene_showinst(gm_scene *scene, gm_handle inst, gm_handle camera);
 
 gm_handle gm_scene_addcam(gm_scene *scene, gm_camera camera);
-void gm_scene_sort(gm_scene *scene);
 void gm_scene_delcam(gm_scene *scene, gm_handle handle);
 gm_camera *gm_scene_peekcam(gm_scene *scene, gm_handle handle);
 

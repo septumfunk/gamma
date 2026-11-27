@@ -1,5 +1,6 @@
 #include "gamma/scene.h"
 #include "gamma/coord.h"
+#include "gamma/render.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -259,41 +260,37 @@ static inline uint32_t gm_camsort_find(gm_camsort *sort, float distance) {
     return lo;
 }
 
-void gm_scene_sort(gm_scene *scene) {
-    for (gm_camslot *cs = scene->cameras; cs < scene->cameras + scene->cam_cap; ++cs) {
-        if (!cs->active) continue;
+void gm_scene_sort(gm_scene *scene, gm_camslot *cs) {
+    gm_camsort *list = &cs->sort;
+    list->count = 0;
+    gm_transform *tf = &cs->data.transform;
 
-        gm_camsort *list = &cs->sort;
-        list->count = 0;
-        gm_transform *tf = &cs->data.transform;
+    for (gm_instslot *is = scene->instances;
+        is < scene->instances + scene->inst_cap; ++is
+    ) {
+        if (!is->active || !(is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras)))
+            continue;
 
-        for (gm_instslot *is = scene->instances;
-            is < scene->instances + scene->inst_cap; ++is
-        ) {
-            if (!is->active || !(is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras)))
-                continue;
-
-            if (is->data.transform.p_handle.kind == GM_HANDLE_INSTANCE) {
-                gm_instslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_INSTANCE);
-                is->data.transform.parent = ps ? &ps->data.transform : NULL;
-            } else if (is->data.transform.p_handle.kind == GM_HANDLE_CAMERA) {
-                gm_camslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_CAMERA);
-                is->data.transform.parent = ps ? &ps->data.transform : NULL;
-            }
-
-            float distance = gm_transform_distance(
-                tf,
-                gm_transform_point(GM_VEC3_NULL, &is->data.transform)
-            );
-            if (distance <= 0.0f) continue;
-
-            uint32_t insert = gm_camsort_find(list, distance);
-            gm_camsort_insert(list, insert, (gm_sort) {
-                (uint32_t)(is - scene->instances),
-                is->generation,
-                distance
-            });
+        if (is->data.transform.p_handle.kind == GM_HANDLE_INSTANCE) {
+            gm_instslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_INSTANCE);
+            is->data.transform.parent = ps ? &ps->data.transform : NULL;
+        } else if (is->data.transform.p_handle.kind == GM_HANDLE_CAMERA) {
+            gm_camslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_CAMERA);
+            is->data.transform.parent = ps ? &ps->data.transform : NULL;
         }
+
+        float distance = gm_transform_distance(
+            tf,
+            gm_transform_point(GM_VEC3_NULL, &is->data.transform)
+        );
+        if (distance <= 0.0f) continue;
+
+        uint32_t insert = gm_camsort_find(list, distance);
+        gm_camsort_insert(list, insert, (gm_sort) {
+            (uint32_t)(is - scene->instances),
+            is->generation,
+            distance
+        });
     }
 }
 
@@ -304,33 +301,49 @@ gm_camera *gm_scene_peekcam(gm_scene *scene, gm_handle handle) {
     return st ? &st->data : NULL;
 }
 
+static inline void gm_scene_renderinst(gm_scene *scene, gm_camera *cam, gm_instslot *is, bool trans) {
+    gm_mesh *mesh = gm_scene_peekmesh(scene, is->data.mesh);
+    if (!mesh) {
+        fprintf(stderr, "RENDER: Instance refers to invalid mesh\n");
+        return;
+    }
+
+    if (is->data.transform.p_handle.kind == GM_HANDLE_INSTANCE) {
+        gm_instslot *ps = gm_checkhandle(scene, is->data.transform.p_handle,
+            GM_HANDLE_INSTANCE);
+        is->data.transform.parent = ps ? &ps->data.transform : NULL;
+    } else if (is->data.transform.p_handle.kind == GM_HANDLE_CAMERA) {
+        gm_camslot *ps = gm_checkhandle(scene, is->data.transform.p_handle,
+            GM_HANDLE_CAMERA);
+        is->data.transform.parent = ps ? &ps->data.transform : NULL;
+    }
+
+    gm_render_mesh(cam, mesh, &is->data.transform, trans);
+}
 void gm_scene_render(gm_scene *scene) {
     for (gm_camslot *cs = scene->cameras; cs < scene->cameras + scene->cam_cap; ++cs) {
         if (!cs->active) continue;
+
         gm_camera *cam = &cs->data;
         gm_camera_clear(cam, scene->sky_color);
 
-        for (gm_sort *sort = cs->sort.data; sort < cs->sort.data + cs->sort.count; ++sort) {
-            gm_instslot *is = gm_idlookup(scene, sort->id, GM_HANDLE_INSTANCE);
-            if (!is || is->generation != sort->generation || !is->active ||
-                !(is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras)))
-                continue;
-
-            gm_mesh *mesh = gm_scene_peekmesh(scene, is->data.mesh);
-            if (!mesh) {
-                fprintf(stderr, "RENDER: Instance refers to invalid mesh\n");
-                continue;
+        if (cam->oit) {
+            for (int p = 0; p < 2; ++p) {
+                for (gm_instslot *is = scene->instances; is < scene->instances + scene->inst_cap; ++is) {
+                    if (is->active &&
+                        (is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras))
+                    ) gm_scene_renderinst(scene, cam, is, p == 1);
+                }
             }
-
-            if (is->data.transform.p_handle.kind == GM_HANDLE_INSTANCE) {
-                gm_instslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_INSTANCE);
-                is->data.transform.parent = ps ? &ps->data.transform : NULL;
-            } else if (is->data.transform.p_handle.kind == GM_HANDLE_CAMERA) {
-                gm_camslot *ps = gm_checkhandle(scene, is->data.transform.p_handle, GM_HANDLE_CAMERA);
-                is->data.transform.parent = ps ? &ps->data.transform : NULL;
+            gm_render_composite(cam);
+        } else {
+            gm_scene_sort(scene, cs);
+            for (gm_sort *sort = cs->sort.data; sort < cs->sort.data + cs->sort.count; ++sort) {
+                gm_instslot *is = gm_idlookup(scene, sort->id, GM_HANDLE_INSTANCE);
+                if (is && is->generation == sort->generation && is->active &&
+                    (is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras))
+                ) gm_scene_renderinst(scene, cam, is, false);
             }
-
-            gm_render_mesh(cam, mesh, &is->data.transform);
         }
     }
 }

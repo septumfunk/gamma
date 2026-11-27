@@ -95,6 +95,20 @@ static inline float gm_vec3_dot(gm_vec3 a, gm_vec3 b) {
 }
 
 typedef struct {
+    float r;
+    float g;
+    float b;
+    float a;
+} gm_vec4;
+#define GM_VEC4_NULL ((gm_vec4){0.0f, 0.0f, 0.0f})
+static inline gm_vec4 gm_vec4_add(gm_vec4 a, gm_vec4 b) {
+    return (gm_vec4){a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a};
+}
+static inline gm_vec4 gm_vec4_sub(gm_vec4 a, gm_vec4 b) {
+    return (gm_vec4){a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a};
+}
+
+typedef struct {
     int32_t x;
     int32_t y;
 } gm_vec2i;

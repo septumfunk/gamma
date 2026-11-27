@@ -1,6 +1,7 @@
 #include "gamma/render.h"
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 gm_framebuffer gm_framebuffer_alloc(gm_vec2u size, gm_color fill) {
     size_t rawsize = size.x * size.y;
@@ -38,6 +39,12 @@ gm_camera gm_camera_perspective(gm_vec2u view, gm_color fill, float fov, float n
         },
         .fb = gm_framebuffer_alloc(view, fill),
         .db = calloc(view.x * view.y, sizeof(float)),
+
+        .oit = true,
+        .oit_buf = {
+            calloc(view.x * view.y, sizeof(gm_vec4)),
+            calloc(view.x * view.y, sizeof(float)),
+        }
     };
 }
 
@@ -79,12 +86,17 @@ gm_tri3 gm_camera_ptri(gm_tri3 ctri, gm_camera *cam) {
     return ctri;
 }
 
-static float gm_edge(gm_vec3 a, gm_vec3 b, float x, float y) {
+static inline float gm_edge(gm_vec3 a, gm_vec3 b, float x, float y) {
     return (x - a.x) * (b.y - a.y)
         - (y - a.y) * (b.x - a.x);
 }
+static inline bool gm_topleft(gm_vec3 a, gm_vec3 b, float sign) {
+    float nx = (b.y - a.y) * sign;
+    float ny = -(b.x - a.x) * sign;
+    return nx > 0.0f || (nx == 0.0f && ny > 0.0f);
+}
 
-static gm_vec3 gm_clip_lerp_z(gm_vec3 a, gm_vec3 b, float z) {
+static inline gm_vec3 gm_clip_lerp_z(gm_vec3 a, gm_vec3 b, float z) {
     float t = (z - a.z) / (b.z - a.z);
     return (gm_vec3) {
         a.x + (b.x - a.x) * t,
@@ -123,13 +135,18 @@ static int gm_clip_tri_near(gm_tri3 tri, float near, gm_tri3 out[2]) {
 
 void gm_render_tri3(
     gm_camera *cam,
-    gm_tri3 stri
+    gm_tri3 stri,
+    bool trans
 ) {
     float area;
     if (cam == NULL || cam->fb.pixels == NULL ||
         (area = gm_edge(stri.a, stri.b, stri.c.x, stri.c.y)) == 0.0f)
         return;
+    if (stri.ac.a == 0 ||
+        (cam->oit && ((!trans && stri.ac.a != 255) || (trans && stri.ac.a == 255))))
+        return;
 
+    float alpha = (float)stri.ac.a / 255.0f;
     uint32_t min_x = (uint32_t)fmaxf(
         0.0f,
         floorf(fminf(stri.a.x, fminf(stri.b.x, stri.c.x)))
@@ -149,6 +166,9 @@ void gm_render_tri3(
 
     gm_pcolor pcolor = gm_to_pcolor(stri.ac);
     float sign = area > 0.0f ? 1.0f : -1.0f;
+    bool tl_ab = gm_topleft(stri.a, stri.b, sign);
+    bool tl_bc = gm_topleft(stri.b, stri.c, sign);
+    bool tl_ca = gm_topleft(stri.c, stri.a, sign);
 
     for (uint32_t y = min_y; y < max_y; ++y) {
         for (uint32_t x = min_x; x < max_x; ++x) {
@@ -159,7 +179,11 @@ void gm_render_tri3(
             float w_bc = gm_edge(stri.b, stri.c, px, py) * sign;
             float w_ca = gm_edge(stri.c, stri.a, px, py) * sign;
 
-            if (w_ab >= 0.0f && w_bc >= 0.0f && w_ca >= 0.0f) {
+            if (
+                (w_ab > 0.0f || (w_ab == 0.0f && tl_ab)) &&
+                (w_bc > 0.0f || (w_bc == 0.0f && tl_bc)) &&
+                (w_ca > 0.0f || (w_ca == 0.0f && tl_ca))
+            ) {
                 size_t index =
                     (size_t)y * (size_t)cam->fb.size.x + (size_t)x;
 
@@ -171,8 +195,27 @@ void gm_render_tri3(
 
                 // check if new depth beats out already drawn depth
                 if (inv_z > 0.0f && inv_z > cam->db[index]) {
-                    cam->db[index] = inv_z;
-                    cam->fb.pixels[index] = pcolor;
+                    if (!trans || !cam->oit) {
+                        cam->db[index] = inv_z;
+                        cam->fb.pixels[index] = pcolor;
+                    } else {
+                        float z = 1.0f / inv_z;
+                        float w = alpha * fmaxf(
+                            1e-2f,
+                            fminf(
+                                3e3f,
+                                10.0f / (1e-5f + powf(z / 5.0f, 2.0f) + powf(z / 200.0f, 6.0f))
+                            )
+                        );
+
+                        gm_vec4 *acc = cam->oit_buf.accum + index;
+                        acc->r += (float)stri.ac.r * alpha * w;
+                        acc->g += (float)stri.ac.g * alpha * w;
+                        acc->b += (float)stri.ac.b * alpha * w;
+                        acc->a += alpha * w;
+
+                        cam->oit_buf.revealance[index] *= 1.0f - alpha;
+                    }
                 }
             }
         }
@@ -198,7 +241,7 @@ void gm_draw_cam(gm_framebuffer *dest, gm_camera *cam, gm_vec2u position) {
 }
 
 
-void gm_render_mesh(gm_camera *cam, gm_mesh *mesh, gm_transform *transform) {
+void gm_render_mesh(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, bool trans) {
     for (gm_tri3 *tri = mesh->tris; tri < mesh->tris + mesh->tri_c; ++tri) {
         gm_tri3 rotated = {
             gm_transform_point(tri->a, transform),
@@ -213,6 +256,28 @@ void gm_render_mesh(gm_camera *cam, gm_mesh *mesh, gm_transform *transform) {
         gm_tri3 clipped[2];
         int n = gm_clip_tri_near(screenspace, cam->perspective.near, clipped);
         for (int i = 0; i < n; ++i)
-            gm_render_tri3(cam, gm_camera_ptri(clipped[i], cam));
+            gm_render_tri3(cam, gm_camera_ptri(clipped[i], cam), trans);
+    }
+}
+
+void gm_render_composite(gm_camera *cam) {
+    if (!cam->oit) return;
+
+    for (size_t i = 0; i < cam->fb.rawsize; ++i) {
+        float reveal = cam->oit_buf.revealance[i];
+        if (reveal >= 1.0f)
+            continue;
+
+        gm_vec4 *acc = cam->oit_buf.accum + i;
+        float inv_w = 1.0f / fmaxf(acc->a, 1e-5f);
+        float cover = 1.0f - reveal;
+
+        gm_color dst = gm_to_rgba(cam->fb.pixels[i]);
+        cam->fb.pixels[i] = gm_rgba(
+            (uint8_t)fminf(255.0f, acc->r * inv_w * cover + dst.r * reveal),
+            (uint8_t)fminf(255.0f, acc->g * inv_w * cover + dst.g * reveal),
+            (uint8_t)fminf(255.0f, acc->b * inv_w * cover + dst.b * reveal),
+            255
+        );
     }
 }

@@ -85,8 +85,10 @@ int raylib(void) {
         {{ 1, -1, -1}, { 1,  1,  1}, { 1, -1,  1},
             GM_LIGHTORANGE, GM_LIGHTORANGE, GM_LIGHTORANGE},
     };
+    for (size_t i = 0; i < sizeof(tris) / sizeof(gm_tri3); ++i)
+        tris[i].ac.a = 100;
+
     gm_handle cube_m = gm_scene_addmesh(&scene, gm_mesh_new(12, tris));
-    
     gm_handle cube1 = gm_scene_addinst_init(
         &scene, cube_m,
         (gm_transform) {
@@ -126,7 +128,6 @@ int raylib(void) {
         main_cam->transform.rotation.y += delta_time * 100.0f * roty1;
         gm_transform_move(&main_cam->transform, move);
 
-        gm_scene_sort(&scene);
         gm_scene_render(&scene);
 
         gm_draw_cam(&FB, main_cam, (gm_vec2u){0, 0});
