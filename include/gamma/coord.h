@@ -120,6 +120,10 @@ typedef struct {
 } gm_vec3i;
 #define GM_VEC3I_NULL ((gm_vec3i){0, 0, 0})
 
+static inline gm_vec3i gm_vec3_floor(gm_vec3 point) {
+    return (gm_vec3i){(int32_t)point.x, (int32_t)point.y, (int32_t)point.z};
+}
+
 typedef struct {
     uint32_t x;
     uint32_t y;

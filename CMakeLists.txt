@@ -41,6 +41,7 @@ add_executable(gamma_test
   tests/main.c
   tests/sdl.c
   tests/raylib.c
+  tests/minecraft.c
 )
 target_include_directories(gamma_test PUBLIC ${ROOT}/include)
 target_link_libraries(gamma_test PUBLIC gamma)

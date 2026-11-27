@@ -127,6 +127,16 @@ build CMakeFiles/gamma_test.dir/tests/raylib.c.o: C_COMPILER__gamma_test_unscann
   OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
   TARGET_SUPPORT_DIR = CMakeFiles/gamma_test.dir
 
+build CMakeFiles/gamma_test.dir/tests/minecraft.c.o: C_COMPILER__gamma_test_unscanned_Debug /Users/djf/Code/alpha/tests/minecraft.c || cmake_object_order_depends_target_gamma_test
+  CONFIG = Debug
+  DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
+  DEP_FILE = CMakeFiles/gamma_test.dir/tests/minecraft.c.o.d
+  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
+  OBJECT_DIR = CMakeFiles/gamma_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
+  TARGET_SUPPORT_DIR = CMakeFiles/gamma_test.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target gamma_test
@@ -135,7 +145,7 @@ build CMakeFiles/gamma_test.dir/tests/raylib.c.o: C_COMPILER__gamma_test_unscann
 #############################################
 # Link the executable gamma_test
 
-build gamma_test: C_EXECUTABLE_LINKER__gamma_test_Debug CMakeFiles/gamma_test.dir/tests/main.c.o CMakeFiles/gamma_test.dir/tests/sdl.c.o CMakeFiles/gamma_test.dir/tests/raylib.c.o | libgamma.a _deps/sf-std-build/libsf-std.a /opt/homebrew/lib/libSDL2-2.0.0.dylib /opt/homebrew/lib/libraylib.6.2.0.dylib || _deps/sf-std-build/libsf-std.a libgamma.a
+build gamma_test: C_EXECUTABLE_LINKER__gamma_test_Debug CMakeFiles/gamma_test.dir/tests/main.c.o CMakeFiles/gamma_test.dir/tests/sdl.c.o CMakeFiles/gamma_test.dir/tests/raylib.c.o CMakeFiles/gamma_test.dir/tests/minecraft.c.o | libgamma.a _deps/sf-std-build/libsf-std.a /opt/homebrew/lib/libSDL2-2.0.0.dylib /opt/homebrew/lib/libraylib.6.2.0.dylib || _deps/sf-std-build/libsf-std.a libgamma.a
   CONFIG = Debug
   FLAGS = -g -arch arm64
   LINK_FLAGS = -Wl,-search_paths_first -Wl,-headerpad_max_install_names

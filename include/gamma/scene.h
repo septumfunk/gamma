@@ -32,17 +32,10 @@ typedef struct {
     gm_instance data;
 } gm_instslot;
 
-#define VEC_NAME gm_camsort
-#define VEC_T gm_sort
-#define VSIZE_T uint32_t
-#define VSIZE_MAX UINT32_MAX
-#include <sf/containers/vec.h>
 typedef struct {
     uint32_t generation;
     bool active;
     gm_camera data;
-
-    gm_camsort sort;
 } gm_camslot;
 
 typedef struct {
