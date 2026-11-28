@@ -317,11 +317,12 @@ void gm_render_tri3_debug(
                         case GM_PASS_WIREFRAME: {
                             gm_color color = stri.ac;
                             if (cam->filters.mask & GM_FILTER_DEPTHSHADE) {
-                                float t = (inv_z - cam->filters.depth_shade.far) /
-                                    (cam->filters.depth_shade.near - cam->filters.depth_shade.far);
-                                t = fmaxf(0.0f, fminf(t, 1.0f)); // clamp
-                                float brightness = cam->filters.depth_shade.range.x + t *
-                                    cam->filters.depth_shade.range.y;
+                                float z = 1.0f / inv_z;
+                                float t = (z - cam->filters.depth_shade.near) /
+                                    (cam->filters.depth_shade.far - cam->filters.depth_shade.near);
+                                t = fmaxf(0.0f, fminf(t, 1.0f));
+
+                                float brightness = 1.0f - t * cam->filters.depth_shade.strength;
 
                                 color.r = (uint8_t)floorf((float)color.r * brightness);
                                 color.g = (uint8_t)floorf((float)color.g * brightness);

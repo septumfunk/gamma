@@ -105,7 +105,7 @@ typedef struct {
     struct {
         float near;
         float far;
-        gm_vec2 range;
+        float strength;
     } depth_shade;
 } gm_filters;
 
