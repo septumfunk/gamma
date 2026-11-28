@@ -162,11 +162,35 @@ static inline gm_mesh gm_mesh_new(size_t tri_c, gm_tri3 tris[tri_c]) {
     };
 }
 
+typedef struct {
+    size_t tris_accum;
+    size_t verts_accum;
+    size_t transparent_accum;
+} gm_renderinfo;
+static inline void gm_renderinfo_clear(gm_renderinfo *info) {
+    info->tris_accum = 0;
+    info->verts_accum = 0;
+    info->transparent_accum = 0;
+}
+
 void gm_render_mesh(
     gm_camera *cam,
     gm_mesh *mesh,
     gm_transform *transform,
     gm_renderpass pass
+);
+void gm_render_debug(
+    gm_camera *cam,
+    gm_mesh *mesh,
+    gm_transform *transform,
+    gm_renderpass pass,
+    gm_renderinfo *info
+);
+void gm_render_wireframe(
+    gm_camera *cam,
+    gm_mesh *mesh,
+    gm_transform *transform,
+    gm_color color
 );
 
 void gm_render_composite(gm_camera *cam);

@@ -71,5 +71,6 @@ void gm_scene_delcam(gm_scene *scene, gm_handle handle);
 gm_camera *gm_scene_peekcam(gm_scene *scene, gm_handle handle);
 
 void gm_scene_render(gm_scene *scene);
+void gm_scene_render_debug(gm_scene *scene, gm_renderinfo *info);
 
 #endif // SCENE_H

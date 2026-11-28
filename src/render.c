@@ -101,45 +101,150 @@ static inline bool gm_topleft(gm_vec3 a, gm_vec3 b, float sign) {
     return nx > 0.0f || (nx == 0.0f && ny > 0.0f);
 }
 
-static inline gm_vec3 gm_clip_lerp_z(gm_vec3 a, gm_vec3 b, float z) {
-    float t = (z - a.z) / (b.z - a.z);
-    return (gm_vec3) {
-        a.x + (b.x - a.x) * t,
-        a.y + (b.y - a.y) * t,
-        z,
+enum {
+    GM_CLIP_NEAR = 1u << 0,
+    GM_CLIP_FAR = 1u << 1,
+    GM_CLIP_LEFT = 1u << 2,
+    GM_CLIP_RIGHT = 1u << 3,
+    GM_CLIP_BOTTOM = 1u << 4,
+    GM_CLIP_TOP = 1u << 5,
+};
+typedef uint32_t gm_ocode;
+#define GM_CLIP_MAX 9
+
+typedef struct {
+    float near, far;
+    float kx, ky; // half width/height
+} gm_frustum;
+
+static inline gm_frustum gm_camera_frustum(gm_camera *cam) {
+    return (gm_frustum) {
+        cam->perspective.near,
+        cam->perspective.far,
+        (float)cam->view.x * 0.5f / cam->perspective.focal, // kx
+        (float)cam->view.y * 0.5f / cam->perspective.focal, // ky
     };
 }
 
-// clips a camera-space triangle against z = near, returns triangle count (0-2)
-static uint32_t gm_clip_tri_near(gm_tri3 tri, float near, gm_vec3 out[4]) {
-    gm_vec3 v[3] = { tri.a, tri.b, tri.c };
-    gm_vec3 poly[4];
-    uint32_t pc = 0;
-
-    for (int i = 0; i < 3; ++i) {
-        gm_vec3 cur = v[i];
-        gm_vec3 nxt = v[(i + 1) % 3];
-        bool cin = cur.z >= near;
-        bool nin = nxt.z >= near;
-
-        if (cin)
-            poly[pc++] = cur;
-        if (cin != nin)
-            poly[pc++] = gm_clip_lerp_z(cur, nxt, near);
-    }
-
-    if (pc < 3)
-        return 0;
-
-    memcpy(out, poly, pc * sizeof(gm_vec3));
-
-    return pc;
+static inline float gm_plane_distance(const gm_frustum *frust, gm_vec3 point, gm_ocode plane) {
+    switch (plane) {
+        case GM_CLIP_NEAR: return point.z - frust->near;
+        case GM_CLIP_FAR: return frust->far - point.z;
+        case GM_CLIP_LEFT: return point.z * frust->kx + point.x;
+        case GM_CLIP_RIGHT: return point.z * frust->kx - point.x;
+        case GM_CLIP_BOTTOM: return point.z * frust->ky + point.y;
+        case GM_CLIP_TOP: return point.z * frust->ky - point.y;
+        default: return 0.0f;
+    };
 }
 
-void gm_render_tri3(
+static inline gm_vec3 gm_clip_lerp(gm_vec3 a, gm_vec3 b, float t) {
+    return (gm_vec3) {
+        a.x + (b.x - a.x) * t,
+        a.y + (b.y - a.y) * t,
+        a.z + (b.z - a.z) * t,
+    };
+}
+
+static inline gm_ocode gm_outcode(const gm_frustum *frust, gm_vec3 point) {
+    gm_ocode planes = 0;
+    // Using bitwise to set planes as a 'flag'
+    for (gm_ocode p = GM_CLIP_NEAR; p <= GM_CLIP_TOP; p <<= 1)
+        if (gm_plane_distance(frust, point, p) < 0.0f)
+            planes |= p;
+    return planes;
+}
+
+// clips a camera-space polygon against given plane,
+// returns modified vertex count
+static uint32_t gm_clip_plane(
+    const gm_vec3 *in, const bool *e_in, uint32_t count,
+    gm_vec3 *out, bool *e_out, gm_ocode plane, const gm_frustum *frust
+) {
+    float dist[GM_CLIP_MAX];
+    for (uint32_t i = 0; i < count; ++i)
+        dist[i] = gm_plane_distance(frust, in[i], plane);
+
+    uint32_t oc = 0;
+    for (uint32_t i = 0; i < count; ++i) {
+        uint32_t n = (i + 1) % count; // next
+        bool cin = dist[i] >= 0.0f;
+        bool nin = dist[n] >= 0.0f;
+
+        if (cin) {
+            e_out[oc] = e_in[i];
+            out[oc++] = in[i];
+        }
+        if (cin != nin) {
+            e_out[oc] = !cin && e_in[i];
+            out[oc++] = cin ?
+                gm_clip_lerp(in[i], in[n], dist[i] / (dist[i] - dist[n])) :
+                gm_clip_lerp(in[n], in[i], dist[n] / (dist[n] - dist[i]));
+        }
+    }
+
+    return oc;
+}
+
+static uint32_t gm_clip_tri(
+    gm_tri3 tri, const gm_frustum *frust,
+    gm_vec3 out[GM_CLIP_MAX], bool edge[GM_CLIP_MAX]
+) {
+    uint32_t o_a = gm_outcode(frust, tri.a);
+    uint32_t o_b = gm_outcode(frust, tri.b);
+    uint32_t o_c = gm_outcode(frust, tri.c);
+
+    // all outside of one plane
+    if (o_a & o_b & o_c)
+        return 0;
+
+    // default to in tri
+    out[0] = tri.a;
+    out[1] = tri.b;
+    out[2] = tri.c;
+    edge[0] = edge[1] = edge[2] = true;
+
+    uint32_t mask = o_a | o_b | o_c;
+    // all outside of no planes
+    if (mask == 0)
+        return 3;
+
+    gm_vec3 tmp[GM_CLIP_MAX];
+    bool e_tmp[GM_CLIP_MAX];
+    gm_vec3 *src = out, *dst = tmp;
+    bool *e_src = edge, *e_dst = e_tmp;
+    uint32_t n = 3;
+
+    for (gm_ocode p = GM_CLIP_NEAR; p <= GM_CLIP_TOP; p <<= 1) {
+        if (!(mask & p)) // not outside
+            continue;
+
+        n = gm_clip_plane(src, e_src, n, dst, e_dst, p, frust);
+        if (n < 3) // Out of view
+            return 0;
+
+        gm_vec3 *swap = src;
+        src = dst;
+        dst = swap;
+
+        bool *e_swap = e_src;
+        e_src = e_dst;
+        e_dst = e_swap;
+    }
+
+    if (src != out) {
+        memcpy(out, src, n * sizeof(gm_vec3));
+        memcpy(edge, e_src, n * sizeof(bool));
+    }
+
+    return n;
+}
+
+void gm_render_tri3_debug(
     gm_camera *cam,
     gm_tri3 stri,
-    gm_renderpass pass
+    gm_renderpass pass,
+    gm_renderinfo *info
 ) {
     float area;
     if (cam == NULL || cam->fb.pixels == NULL ||
@@ -149,6 +254,11 @@ void gm_render_tri3(
         (pass == GM_PASS_OPAQUE && stri.ac.a != 255) ||
         (pass == GM_PASS_TRANSPARENT && stri.ac.a == 255)
     ) return;
+
+    if (info) {
+        ++info->tris_accum;
+        info->verts_accum += 3;
+    }
 
     float alpha = (float)stri.ac.a / 255.0f;
     uint32_t min_x = (uint32_t)fmaxf(
@@ -217,6 +327,7 @@ void gm_render_tri3(
                                     powf(z / 200.0f, 6.0f))
                                 )
                             );
+                            if (info) ++info->transparent_accum;
 
                             gm_vec4 *acc = cam->accum + index;
                             acc->r += (float)stri.ac.r * alpha * w;
@@ -231,6 +342,13 @@ void gm_render_tri3(
             }
         }
     }
+}
+void gm_render_tri3(
+    gm_camera *cam,
+    gm_tri3 stri,
+    gm_renderpass pass
+) {
+    gm_render_tri3_debug(cam, stri, pass, NULL);
 }
 
 // adapted from: https://en.wikipedia.org/wiki/Liang–Barsky_algorithm
@@ -380,7 +498,8 @@ void gm_draw_cam(gm_framebuffer *dest, gm_camera *cam, gm_vec2u position) {
 }
 
 
-void gm_render_mesh_raw(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, gm_renderpass pass, gm_color color) {
+void gm_render_mesh_raw(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, gm_renderpass pass, gm_color color, gm_renderinfo *info) {
+    gm_frustum frust = gm_camera_frustum(cam);
     for (gm_tri3 *tri = mesh->tris; tri < mesh->tris + mesh->tri_c; ++tri) {
         gm_tri3 rotated = {
             gm_transform_point(tri->a, transform),
@@ -391,60 +510,45 @@ void gm_render_mesh_raw(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, 
 
         gm_tri3 screenspace = gm_camera_ctri(rotated, cam);
 
-        // Clip to near plane
-        gm_vec3 clipped[4];
-        uint32_t n = gm_clip_tri_near(screenspace, cam->perspective.near, clipped);
+        // Clip to frustum
+        gm_vec3 clipped[GM_CLIP_MAX];
+        bool edge[GM_CLIP_MAX];
+        uint32_t n = gm_clip_tri(screenspace, &frust, clipped, edge);
         if (n == 0) continue;
+
+        // project in place
+        for (uint32_t i = 0; i < n; ++i)
+            clipped[i] = gm_camera_pvec(clipped[i], cam);
 
         switch (pass) {
             case GM_PASS_WIREFRAME: {
-                const gm_vec3 proj[4] = {
-                    gm_camera_pvec(clipped[0], cam),
-                    gm_camera_pvec(clipped[1], cam),
-                    gm_camera_pvec(clipped[2], cam),
-                    gm_camera_pvec(clipped[3], cam),
-                };
-
-                if (n == 3) {
-                    gm_render_line(cam, proj[0], proj[1], color);
-                    gm_render_line(cam, proj[1], proj[2], color);
-                    gm_render_line(cam, proj[2], proj[0], color);
-                    break;
+                for (uint32_t i = 0; i < n; ++i) {
+                    if (edge[i])
+                        gm_render_line(cam, clipped[i], clipped[(i + 1) % n], color);
                 }
-                gm_render_line(cam, proj[0], proj[1], color);
-                gm_render_line(cam, proj[1], proj[2], color);
-                gm_render_line(cam, proj[2], proj[3], color);
-                gm_render_line(cam, proj[3], proj[0], color);
                 break;
             }
-            default:
-                if (n == 3) {
-                    gm_tri3 ptri = gm_camera_ptri(
-                        (gm_tri3){clipped[0], clipped[1], clipped[2], tri->ac, tri->bc, tri->cc},
-                        cam
-                    );
-                    gm_render_tri3(cam, ptri, pass);
-                    break;
+            default: {
+                for (uint32_t i = 1; i + 1 < n; ++i) {
+                    gm_render_tri3_debug(cam, (gm_tri3) {
+                        clipped[0], clipped[i], clipped[i + 1],
+                        tri->ac, tri->bc, tri->cc
+                    }, pass, info);
                 }
-
-                gm_render_tri3(cam, gm_camera_ptri(
-                    (gm_tri3){clipped[0], clipped[1], clipped[2], tri->ac, tri->bc, tri->cc},
-                    cam
-                ), pass);
-                gm_render_tri3(cam, gm_camera_ptri(
-                    (gm_tri3){clipped[0], clipped[2], clipped[3], tri->ac, tri->bc, tri->cc},
-                    cam
-                ), pass);
                 break;
+            }
         }
     }
 }
 
 void gm_render_mesh(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, gm_renderpass pass) {
-    gm_render_mesh_raw(cam, mesh, transform, pass, GM_GREEN);
+    gm_render_mesh_raw(cam, mesh, transform, pass, GM_GREEN, NULL);
+}
+void gm_render_debug(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, gm_renderpass pass, gm_renderinfo *info) {
+    gm_render_mesh_raw(cam, mesh, transform, pass, GM_GREEN, info);
 }
 void gm_render_wireframe(gm_camera *cam, gm_mesh *mesh, gm_transform *transform, gm_color color) {
-    gm_render_mesh_raw(cam, mesh, transform, GM_PASS_WIREFRAME, color);
+    gm_render_mesh_raw(cam, mesh, transform, GM_PASS_WIREFRAME, color, NULL);
 }
 
 void gm_render_composite(gm_camera *cam) {

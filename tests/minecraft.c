@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __APPLE__
+#include <pthread.h>
+#include <sys/qos.h>
+#endif
+
 #define FPS        0
 #define FPS_SAMPLE 255
 #define WIDTH      320
@@ -17,8 +22,12 @@ static uint32_t fps_sample[FPS_SAMPLE] = {0};
 static uint32_t fps_index = 0;
 static char fps_text[16] = {0};
 static char passes[64] = {0};
+static char debug_text[64] = {0};
 
 static void init_framebuffer(gm_vec2u size, gm_color fill) {
+    #ifdef __APPLE__
+    pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+    #endif
     InitWindow(WIDTH * SCALE, HEIGHT * SCALE, "Gamma (Raylib)");
     if (FPS > 0) SetTargetFPS(FPS);
 
@@ -41,6 +50,7 @@ static void draw_framebuffer(void) {
     DrawTexturePro(FB_TEX, (Rectangle){0, 0, WIDTH, HEIGHT}, (Rectangle){0, 0, WIDTH * SCALE, HEIGHT * SCALE}, (Vector2){0, 0}, 0, WHITE);
     DrawText(fps_text, 12, 8, 20, GREEN);
     DrawText(passes, 12, 32, 20, RED);
+    DrawText(debug_text, 12, 56, 20, BLUE);
     EndDrawing();
 }
 
@@ -491,7 +501,7 @@ int minecraft(void) {
     init_framebuffer((gm_vec2u){WIDTH, HEIGHT}, GM_BLACK);
     gm_scene scene = gm_scene_new(GM_DARKBLUE);
 
-    gm_camera ncam = gm_camera_perspective((gm_vec2u){WIDTH, HEIGHT}, GM_DARKBLUE, 90.0f, 0.1f, 10.0f);
+    gm_camera ncam = gm_camera_perspective((gm_vec2u){WIDTH, HEIGHT}, GM_DARKBLUE, 90.0f, 0.1f, 30.0f);
     ncam.transform.position = (gm_vec3){0, 10, -20};
     ncam.transform.rotation.x = 22.5;
     gm_handle cam = gm_scene_addcam(&scene, ncam);
@@ -499,6 +509,38 @@ int minecraft(void) {
     gm_mesh chunk_mesh = build_chunk(display_chunk);
     gm_handle chunk_m = gm_scene_addmesh(&scene, chunk_mesh);
     gm_scene_addinst(&scene, chunk_m);
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){16, 0, 0}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){0, 0, 16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){16, 0, 16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){-16, 0, 0}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){0, 0, -16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){-16, 0, -16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){16, 0, -16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
+    gm_scene_addinst_init(&scene, chunk_m, (gm_transform){
+        NULL, {.kind = GM_HANDLE_NULL},
+        (gm_vec3){-16, 0, 16}, GM_VEC3_NULL, GM_VEC3_NULL
+    });
 
     while (!WindowShouldClose()) {
         float delta_time = GetFrameTime();
@@ -533,7 +575,12 @@ int minecraft(void) {
         if (main_cam->passes & GM_PASS_WIREFRAME)
             strcat(passes, " WIRE");
 
-        gm_scene_render(&scene);
+        gm_renderinfo info = {0};
+        gm_scene_render_debug(&scene, &info);
+        memset(debug_text, 0, sizeof(debug_text));
+        snprintf(debug_text, sizeof(debug_text), "Tri: %lu\nVert: %lu\nTrans: %lu", 
+            info.tris_accum, info.verts_accum, info.transparent_accum
+        );
 
         gm_draw_cam(&FB, main_cam, (gm_vec2u){0, 0});
 

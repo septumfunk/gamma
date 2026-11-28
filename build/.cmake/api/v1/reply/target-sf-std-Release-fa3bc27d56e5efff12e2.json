@@ -62,7 +62,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=c11 -arch arm64"
+					"fragment" : "-O3 -DNDEBUG -std=c11 -arch arm64"
 				},
 				{
 					"backtrace" : 2,

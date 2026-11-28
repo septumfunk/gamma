@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: gamma
-# Configurations: Debug
+# Configurations: Release
 # =============================================================================
 
 #############################################
@@ -24,7 +24,7 @@ ninja_required_version = 1.5
 #############################################
 # Set configuration variable for custom commands.
 
-CONFIGURATION = Debug
+CONFIGURATION = Release
 # =============================================================================
 # Include auxiliary files.
 
@@ -49,21 +49,21 @@ cmake_ninja_workdir = /Users/djf/Code/alpha/build/
 
 build cmake_object_order_depends_target_gamma: phony || cmake_object_order_depends_target_sf-std
 
-build CMakeFiles/gamma.dir/src/render.c.o: C_COMPILER__gamma_unscanned_Debug /Users/djf/Code/alpha/src/render.c || cmake_object_order_depends_target_gamma
-  CONFIG = Debug
+build CMakeFiles/gamma.dir/src/render.c.o: C_COMPILER__gamma_unscanned_Release /Users/djf/Code/alpha/src/render.c || cmake_object_order_depends_target_gamma
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma.dir/src/render.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma.dir/src
   TARGET_SUPPORT_DIR = CMakeFiles/gamma.dir
 
-build CMakeFiles/gamma.dir/src/scene.c.o: C_COMPILER__gamma_unscanned_Debug /Users/djf/Code/alpha/src/scene.c || cmake_object_order_depends_target_gamma
-  CONFIG = Debug
+build CMakeFiles/gamma.dir/src/scene.c.o: C_COMPILER__gamma_unscanned_Release /Users/djf/Code/alpha/src/scene.c || cmake_object_order_depends_target_gamma
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma.dir/src/scene.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma.dir/src
@@ -77,10 +77,10 @@ build CMakeFiles/gamma.dir/src/scene.c.o: C_COMPILER__gamma_unscanned_Debug /Use
 #############################################
 # Link the static library libgamma.a
 
-build libgamma.a: C_STATIC_LIBRARY_LINKER__gamma_Debug CMakeFiles/gamma.dir/src/render.c.o CMakeFiles/gamma.dir/src/scene.c.o || _deps/sf-std-build/libsf-std.a
+build libgamma.a: C_STATIC_LIBRARY_LINKER__gamma_Release CMakeFiles/gamma.dir/src/render.c.o CMakeFiles/gamma.dir/src/scene.c.o || _deps/sf-std-build/libsf-std.a
   ARCH_FLAGS = -arch arm64
-  CONFIG = Debug
-  LANGUAGE_COMPILE_FLAGS = -g
+  CONFIG = Release
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = CMakeFiles/gamma.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -97,41 +97,41 @@ build libgamma.a: C_STATIC_LIBRARY_LINKER__gamma_Debug CMakeFiles/gamma.dir/src/
 
 build cmake_object_order_depends_target_gamma_test: phony || cmake_object_order_depends_target_gamma cmake_object_order_depends_target_sf-std
 
-build CMakeFiles/gamma_test.dir/tests/main.c.o: C_COMPILER__gamma_test_unscanned_Debug /Users/djf/Code/alpha/tests/main.c || cmake_object_order_depends_target_gamma_test
-  CONFIG = Debug
+build CMakeFiles/gamma_test.dir/tests/main.c.o: C_COMPILER__gamma_test_unscanned_Release /Users/djf/Code/alpha/tests/main.c || cmake_object_order_depends_target_gamma_test
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma_test.dir/tests/main.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma_test.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
   TARGET_SUPPORT_DIR = CMakeFiles/gamma_test.dir
 
-build CMakeFiles/gamma_test.dir/tests/sdl.c.o: C_COMPILER__gamma_test_unscanned_Debug /Users/djf/Code/alpha/tests/sdl.c || cmake_object_order_depends_target_gamma_test
-  CONFIG = Debug
+build CMakeFiles/gamma_test.dir/tests/sdl.c.o: C_COMPILER__gamma_test_unscanned_Release /Users/djf/Code/alpha/tests/sdl.c || cmake_object_order_depends_target_gamma_test
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma_test.dir/tests/sdl.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma_test.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
   TARGET_SUPPORT_DIR = CMakeFiles/gamma_test.dir
 
-build CMakeFiles/gamma_test.dir/tests/raylib.c.o: C_COMPILER__gamma_test_unscanned_Debug /Users/djf/Code/alpha/tests/raylib.c || cmake_object_order_depends_target_gamma_test
-  CONFIG = Debug
+build CMakeFiles/gamma_test.dir/tests/raylib.c.o: C_COMPILER__gamma_test_unscanned_Release /Users/djf/Code/alpha/tests/raylib.c || cmake_object_order_depends_target_gamma_test
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma_test.dir/tests/raylib.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma_test.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
   TARGET_SUPPORT_DIR = CMakeFiles/gamma_test.dir
 
-build CMakeFiles/gamma_test.dir/tests/minecraft.c.o: C_COMPILER__gamma_test_unscanned_Debug /Users/djf/Code/alpha/tests/minecraft.c || cmake_object_order_depends_target_gamma_test
-  CONFIG = Debug
+build CMakeFiles/gamma_test.dir/tests/minecraft.c.o: C_COMPILER__gamma_test_unscanned_Release /Users/djf/Code/alpha/tests/minecraft.c || cmake_object_order_depends_target_gamma_test
+  CONFIG = Release
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED
   DEP_FILE = CMakeFiles/gamma_test.dir/tests/minecraft.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks  -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference -O3
   INCLUDES = -I/Users/djf/Code/alpha/include -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include -isystem /opt/homebrew/include -isystem /opt/homebrew/include/SDL2
   OBJECT_DIR = CMakeFiles/gamma_test.dir
   OBJECT_FILE_DIR = CMakeFiles/gamma_test.dir/tests
@@ -145,9 +145,9 @@ build CMakeFiles/gamma_test.dir/tests/minecraft.c.o: C_COMPILER__gamma_test_unsc
 #############################################
 # Link the executable gamma_test
 
-build gamma_test: C_EXECUTABLE_LINKER__gamma_test_Debug CMakeFiles/gamma_test.dir/tests/main.c.o CMakeFiles/gamma_test.dir/tests/sdl.c.o CMakeFiles/gamma_test.dir/tests/raylib.c.o CMakeFiles/gamma_test.dir/tests/minecraft.c.o | libgamma.a _deps/sf-std-build/libsf-std.a /opt/homebrew/lib/libSDL2-2.0.0.dylib /opt/homebrew/lib/libraylib.6.2.0.dylib || _deps/sf-std-build/libsf-std.a libgamma.a
-  CONFIG = Debug
-  FLAGS = -g -arch arm64
+build gamma_test: C_EXECUTABLE_LINKER__gamma_test_Release CMakeFiles/gamma_test.dir/tests/main.c.o CMakeFiles/gamma_test.dir/tests/sdl.c.o CMakeFiles/gamma_test.dir/tests/raylib.c.o CMakeFiles/gamma_test.dir/tests/minecraft.c.o | libgamma.a _deps/sf-std-build/libsf-std.a /opt/homebrew/lib/libSDL2-2.0.0.dylib /opt/homebrew/lib/libraylib.6.2.0.dylib || _deps/sf-std-build/libsf-std.a libgamma.a
+  CONFIG = Release
+  FLAGS = -O3 -DNDEBUG -arch arm64
   LINK_FLAGS = -Wl,-search_paths_first -Wl,-headerpad_max_install_names
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  libgamma.a  _deps/sf-std-build/libsf-std.a  /opt/homebrew/lib/libSDL2-2.0.0.dylib  /opt/homebrew/lib/libraylib.6.2.0.dylib  -framework OpenGL
   LINK_PATH = -F/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/System/Library/Frameworks
@@ -196,41 +196,41 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_sf-std: phony || .
 
-build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/buffer.c.o: C_COMPILER__sf-std_unscanned_Debug /Users/djf/Code/alpha/build/_deps/sf-std-src/src/buffer.c || cmake_object_order_depends_target_sf-std
-  CONFIG = Debug
+build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/buffer.c.o: C_COMPILER__sf-std_unscanned_Release /Users/djf/Code/alpha/build/_deps/sf-std-src/src/buffer.c || cmake_object_order_depends_target_sf-std
+  CONFIG = Release
   DEFINES = -D_CRT_SECURE_NO_WARNINGS
   DEP_FILE = _deps/sf-std-build/CMakeFiles/sf-std.dir/src/buffer.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
   INCLUDES = -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include
   OBJECT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
   OBJECT_FILE_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir/src
   TARGET_SUPPORT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
 
-build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/fs.c.o: C_COMPILER__sf-std_unscanned_Debug /Users/djf/Code/alpha/build/_deps/sf-std-src/src/fs.c || cmake_object_order_depends_target_sf-std
-  CONFIG = Debug
+build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/fs.c.o: C_COMPILER__sf-std_unscanned_Release /Users/djf/Code/alpha/build/_deps/sf-std-src/src/fs.c || cmake_object_order_depends_target_sf-std
+  CONFIG = Release
   DEFINES = -D_CRT_SECURE_NO_WARNINGS
   DEP_FILE = _deps/sf-std-build/CMakeFiles/sf-std.dir/src/fs.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
   INCLUDES = -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include
   OBJECT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
   OBJECT_FILE_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir/src
   TARGET_SUPPORT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
 
-build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/math.c.o: C_COMPILER__sf-std_unscanned_Debug /Users/djf/Code/alpha/build/_deps/sf-std-src/src/math.c || cmake_object_order_depends_target_sf-std
-  CONFIG = Debug
+build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/math.c.o: C_COMPILER__sf-std_unscanned_Release /Users/djf/Code/alpha/build/_deps/sf-std-src/src/math.c || cmake_object_order_depends_target_sf-std
+  CONFIG = Release
   DEFINES = -D_CRT_SECURE_NO_WARNINGS
   DEP_FILE = _deps/sf-std-build/CMakeFiles/sf-std.dir/src/math.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
   INCLUDES = -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include
   OBJECT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
   OBJECT_FILE_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir/src
   TARGET_SUPPORT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
 
-build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o: C_COMPILER__sf-std_unscanned_Debug /Users/djf/Code/alpha/build/_deps/sf-std-src/src/str.c || cmake_object_order_depends_target_sf-std
-  CONFIG = Debug
+build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o: C_COMPILER__sf-std_unscanned_Release /Users/djf/Code/alpha/build/_deps/sf-std-src/src/str.c || cmake_object_order_depends_target_sf-std
+  CONFIG = Release
   DEFINES = -D_CRT_SECURE_NO_WARNINGS
   DEP_FILE = _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o.d
-  FLAGS = -g -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
+  FLAGS = -O3 -DNDEBUG -std=c11 -arch arm64 -Wall -Wextra -Werror -Wpedantic -Wconversion -Wuninitialized -Wsign-conversion -Wnull-dereference
   INCLUDES = -I/Users/djf/Code/alpha/build/_deps/sf-std-src/include
   OBJECT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
   OBJECT_FILE_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir/src
@@ -244,10 +244,10 @@ build _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o: C_COMPILER__sf-std_u
 #############################################
 # Link the static library _deps/sf-std-build/libsf-std.a
 
-build _deps/sf-std-build/libsf-std.a: C_STATIC_LIBRARY_LINKER__sf-std_Debug _deps/sf-std-build/CMakeFiles/sf-std.dir/src/buffer.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/fs.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/math.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o
+build _deps/sf-std-build/libsf-std.a: C_STATIC_LIBRARY_LINKER__sf-std_Release _deps/sf-std-build/CMakeFiles/sf-std.dir/src/buffer.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/fs.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/math.c.o _deps/sf-std-build/CMakeFiles/sf-std.dir/src/str.c.o
   ARCH_FLAGS = -arch arm64
-  CONFIG = Debug
-  LANGUAGE_COMPILE_FLAGS = -g
+  CONFIG = Release
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = _deps/sf-std-build/CMakeFiles/sf-std.dir
   POST_BUILD = :
   PRE_LINK = :

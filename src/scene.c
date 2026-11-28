@@ -249,7 +249,7 @@ gm_camera *gm_scene_peekcam(gm_scene *scene, gm_handle handle) {
     return st ? &st->data : NULL;
 }
 
-static inline void gm_scene_renderinst(gm_scene *scene, gm_camera *cam, gm_instslot *is, gm_renderpass pass) {
+static inline void gm_scene_renderinst(gm_scene *scene, gm_camera *cam, gm_instslot *is, gm_renderpass pass, gm_renderinfo *info) {
     gm_mesh *mesh = gm_scene_peekmesh(scene, is->data.mesh);
     if (!mesh) {
         fprintf(stderr, "RENDER: Instance refers to invalid mesh\n");
@@ -266,9 +266,9 @@ static inline void gm_scene_renderinst(gm_scene *scene, gm_camera *cam, gm_insts
         is->data.transform.parent = ps ? &ps->data.transform : NULL;
     }
 
-    gm_render_mesh(cam, mesh, &is->data.transform, pass);
+    gm_render_debug(cam, mesh, &is->data.transform, pass, info);
 }
-void gm_scene_render(gm_scene *scene) {
+void gm_scene_render_debug(gm_scene *scene, gm_renderinfo *info) {
     for (gm_camslot *cs = scene->cameras; cs < scene->cameras + scene->cam_cap; ++cs) {
         if (!cs->active) continue;
 
@@ -284,9 +284,12 @@ void gm_scene_render(gm_scene *scene) {
             if (cam->passes & p_order[p])
                 for (gm_instslot *is = scene->instances; is < scene->instances + scene->inst_cap; ++is) {
                     if (is->active && (is->data.cameras & GM_CAMERA_BIT(cs - scene->cameras)))
-                        gm_scene_renderinst(scene, cam, is, p_order[p]);
+                        gm_scene_renderinst(scene, cam, is, p_order[p], info);
                 }
         }
         gm_render_composite(cam);
     }
+}
+void gm_scene_render(gm_scene *scene) {
+    gm_scene_render_debug(scene, NULL);
 }

@@ -7,28 +7,28 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Git::Git::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Git__Git-Debug-4e3d03b34e2c3d3331d0.json",
+					"jsonFile" : "target-Git__Git-Release-4e3d03b34e2c3d3331d0.json",
 					"name" : "Git::Git",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "SDL2::SDL2::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-SDL2__SDL2-Debug-299c7c7bbc0dd83704c0.json",
+					"jsonFile" : "target-SDL2__SDL2-Release-299c7c7bbc0dd83704c0.json",
 					"name" : "SDL2::SDL2",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "SDL2::SDL2main::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-SDL2__SDL2main-Debug-999be7f1e7a9dbb436df.json",
+					"jsonFile" : "target-SDL2__SDL2main-Release-999be7f1e7a9dbb436df.json",
 					"name" : "SDL2::SDL2main",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "raylib::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-raylib-Debug-5a975a390af0fd86b09f.json",
+					"jsonFile" : "target-raylib-Release-5a975a390af0fd86b09f.json",
 					"name" : "raylib",
 					"projectIndex" : 0
 				}
@@ -48,7 +48,7 @@
 					[
 						1
 					],
-					"jsonFile" : "directory-.-Debug-b23a0b23c080df4d29ba.json",
+					"jsonFile" : "directory-.-Release-b23a0b23c080df4d29ba.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28"
@@ -63,7 +63,7 @@
 				},
 				{
 					"build" : "_deps/sf-std-build",
-					"jsonFile" : "directory-_deps.sf-std-build-Debug-82c5556cacceff75d8c1.json",
+					"jsonFile" : "directory-_deps.sf-std-build-Release-82c5556cacceff75d8c1.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28"
@@ -77,7 +77,7 @@
 					]
 				}
 			],
-			"name" : "Debug",
+			"name" : "Release",
 			"projects" : 
 			[
 				{
@@ -121,21 +121,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "gamma::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-gamma-Debug-53d658902fa0ba5a4b82.json",
+					"jsonFile" : "target-gamma-Release-2ff65f90a4e25dfcbf40.json",
 					"name" : "gamma",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "gamma_test::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-gamma_test-Debug-c67f42b4cca1a8d03902.json",
+					"jsonFile" : "target-gamma_test-Release-c10a4b45300f72c7bfe8.json",
 					"name" : "gamma_test",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "sf-std::@2850d64f13ed11f49952",
-					"jsonFile" : "target-sf-std-Debug-7c9d451696e9ee0cf114.json",
+					"jsonFile" : "target-sf-std-Release-fa3bc27d56e5efff12e2.json",
 					"name" : "sf-std",
 					"projectIndex" : 1
 				}
