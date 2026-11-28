@@ -48,16 +48,17 @@ gm_camera gm_camera_perspective(gm_vec2u view, gm_color fill, float fov, float n
     };
 }
 
-gm_vec3 gm_camera_tvec(gm_vec3 point, gm_camera *cam) {
-    if (cam->transform.parent)
-        point = gm_transform_point(point, cam->transform.parent);
-    point.x -= cam->transform.position.x;
-    point.y -= cam->transform.position.y;
-    point.z -= cam->transform.position.z;
+gm_vec3 gm_transform_tvec(gm_vec3 point, gm_transform *transform) {
+    if (transform->parent)
+        point = gm_transform_tvec(point, transform->parent);
 
-    point = gm_vec3_rotz(point, -cam->transform.rotation.z);
-    point = gm_vec3_roty(point, -cam->transform.rotation.y);
-    point = gm_vec3_rotx(point, -cam->transform.rotation.x);
+    point.x -= transform->position.x;
+    point.y -= transform->position.y;
+    point.z -= transform->position.z;
+
+    point = gm_vec3_rotz(point, -transform->rotation.z);
+    point = gm_vec3_roty(point, -transform->rotation.y);
+    point = gm_vec3_rotx(point, -transform->rotation.x);
 
     return point;
 }
@@ -73,9 +74,9 @@ gm_vec3 gm_camera_pvec(gm_vec3 cpoint, gm_camera *cam) {
 }
 
 gm_tri3 gm_camera_ctri(gm_tri3 tri, gm_camera *cam) {
-    tri.a = gm_camera_tvec(tri.a, cam);
-    tri.b = gm_camera_tvec(tri.b, cam);
-    tri.c = gm_camera_tvec(tri.c, cam);
+    tri.a = gm_transform_tvec(tri.a, &cam->transform);
+    tri.b = gm_transform_tvec(tri.b, &cam->transform);
+    tri.c = gm_transform_tvec(tri.c, &cam->transform);
 
     return tri;
 }

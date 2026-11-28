@@ -124,7 +124,7 @@ typedef struct {
 
 gm_camera gm_camera_perspective(gm_vec2u view, gm_color fill, float fov, float near, float far);
 
-gm_vec3 gm_camera_tvec(gm_vec3 point, gm_camera *cam);
+gm_vec3 gm_transform_tvec(gm_vec3 point, gm_transform *transform);
 gm_vec3 gm_camera_pvec(gm_vec3 cpoint, gm_camera *cam);
 
 gm_tri3 gm_camera_ctri(gm_tri3 tri, gm_camera *cam);
