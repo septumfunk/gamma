@@ -49,6 +49,8 @@ gm_camera gm_camera_perspective(gm_vec2u view, gm_color fill, float fov, float n
 }
 
 gm_vec3 gm_camera_tvec(gm_vec3 point, gm_camera *cam) {
+    if (cam->transform.parent)
+        point = gm_transform_point(point, cam->transform.parent);
     point.x -= cam->transform.position.x;
     point.y -= cam->transform.position.y;
     point.z -= cam->transform.position.z;
