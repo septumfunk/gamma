@@ -281,7 +281,6 @@ void gm_render_tri3_debug(
         ceilf(fmaxf(stri.a.y, fmaxf(stri.b.y, stri.c.y)))
     );
 
-    gm_pcolor pcolor = gm_to_pcolor(stri.ac);
     float sign = area > 0.0f ? 1.0f : -1.0f;
     float inv_area = 1.0f / fabsf(area);
 
@@ -316,8 +315,20 @@ void gm_render_tri3_debug(
                     switch (pass) {
                         case GM_PASS_OPAQUE:
                         case GM_PASS_WIREFRAME: {
+                            gm_color color = stri.ac;
+                            if (cam->filters.mask & GM_FILTER_DEPTHSHADE) {
+                                float t = (inv_z - cam->filters.depth_shade.far) /
+                                    (cam->filters.depth_shade.near - cam->filters.depth_shade.far);
+                                t = fmaxf(0.0f, fminf(t, 1.0f)); // clamp
+                                float brightness = cam->filters.depth_shade.range.x + t *
+                                    cam->filters.depth_shade.range.y;
+
+                                color.r = (uint8_t)floorf((float)color.r * brightness);
+                                color.g = (uint8_t)floorf((float)color.g * brightness);
+                                color.b = (uint8_t)floorf((float)color.b * brightness);
+                            }
                             cam->db[index] = inv_z;
-                            cam->fb.pixels[index] = pcolor;
+                            cam->fb.pixels[index] = gm_to_pcolor(color);
                             break;
                         }
                         case GM_PASS_TRANSPARENT: {

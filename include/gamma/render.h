@@ -95,6 +95,20 @@ static inline void gm_framebuffer_clear(gm_framebuffer *fb, gm_color fill) {
 typedef enum {
     GM_CAMERA_PERSPECTIVE,
 } gm_camtype;
+
+enum {
+    GM_FILTER_DEPTHSHADE = 1u << 0,
+};
+typedef uint16_t gm_filter;
+typedef struct {
+    gm_filter mask;
+    struct {
+        float near;
+        float far;
+        gm_vec2 range;
+    } depth_shade;
+} gm_filters;
+
 enum {
     GM_PASS_OPAQUE = 1u << 0,
     GM_PASS_TRANSPARENT = 1u << 1,
@@ -120,6 +134,8 @@ typedef struct {
     // WBOIT
     gm_vec4 *accum;
     float *revealance;
+
+    gm_filters filters;
 } gm_camera;
 
 gm_camera gm_camera_perspective(gm_vec2u view, gm_color fill, float fov, float near, float far);
