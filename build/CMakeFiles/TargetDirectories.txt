@@ -1,7 +1,0 @@
-/Users/djf/Code/alpha/build/CMakeFiles/gamma.dir
-/Users/djf/Code/alpha/build/CMakeFiles/gamma_test.dir
-/Users/djf/Code/alpha/build/CMakeFiles/edit_cache.dir
-/Users/djf/Code/alpha/build/CMakeFiles/rebuild_cache.dir
-/Users/djf/Code/alpha/build/_deps/sf-std-build/CMakeFiles/sf-std.dir
-/Users/djf/Code/alpha/build/_deps/sf-std-build/CMakeFiles/edit_cache.dir
-/Users/djf/Code/alpha/build/_deps/sf-std-build/CMakeFiles/rebuild_cache.dir
