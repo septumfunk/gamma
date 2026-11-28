@@ -9,15 +9,6 @@ set(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(gamma C)
 
-# Fetch Dependencies
-include(FetchContent)
-FetchContent_Declare(
-  sf-std
-  GIT_REPOSITORY https://github.com/septumfunk/sf-std.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(sf-std)
-
 add_compile_options(
   -Wall -Wextra -Werror
   -Wpedantic -Wconversion -Wuninitialized
@@ -32,19 +23,27 @@ add_library(${PROJECT_NAME} ${LIBRARY_TYPE}
 )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ROOT}/include)
 
-find_package(SDL2 CONFIG REQUIRED)
-find_package(raylib CONFIG REQUIRED)
-target_link_libraries(gamma PUBLIC sf-std SDL2::SDL2 raylib)
+if (PROJECT_IS_TOP_LEVEL)
+  find_package(SDL2 CONFIG REQUIRED)
+  find_package(raylib CONFIG REQUIRED)
+  include(FetchContent)
+  FetchContent_Declare(
+    sf-std
+    GIT_REPOSITORY https://github.com/septumfunk/sf-std.git
+    GIT_TAG master
+  )
+  FetchContent_MakeAvailable(sf-std)
 
-# Tests
-add_executable(gamma_test
-  tests/main.c
-  tests/sdl.c
-  tests/raylib.c
-  tests/minecraft.c
-)
-target_include_directories(gamma_test PUBLIC ${ROOT}/include)
-target_link_libraries(gamma_test PUBLIC gamma)
+  # Tests
+  add_executable(gamma_test
+    tests/main.c
+    tests/sdl.c
+    tests/raylib.c
+    tests/minecraft.c
+  )
+  target_include_directories(gamma_test PUBLIC ${ROOT}/include)
+  target_link_libraries(gamma_test PUBLIC gamma SDL2::SDL2 raylib sf-std)
+endif()
 
 # Sanitizer suite
 option(ENABLE_SANITIZERS "Enable sanitizers" OFF)
